@@ -29,16 +29,16 @@ py alohomora.py
 python alohomora.py
 ```
 
-##Caution
+## Caution
 After encryption/decryption, please destroy your both key files in `.KEYS/` directory so no one can access your secrets! 
 
-##Features
+## Features
 1. Generate RSA key pairs
 2. Load Keys from .KEYS/ directory
 3. Encrypt file or directory
 4. Decrypt file or directory
 
-##Contribution
+## Contribution
 
 Contributions to Alohomora are welcome! If you would like to contribute, please follow these steps:
 
