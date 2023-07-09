@@ -119,11 +119,10 @@ class Alohomora:
 
         print(GRAY + BOLD + "  ⏳ Computing total time ...\n"+END)
         sleep(1)
-
-        EXPECTED_TIME = ((TOTAL_SIZE*0.00003)/60)
+        EXPECTED_TIME = (TOTAL_SIZE * 0.00001)/60 if DECRYPT else (TOTAL_SIZE * 0.000001)/60
         EXPECTED_TIME_HMS = self._convert_minutes_to_hms(EXPECTED_TIME)
-        print(GREEN + BOLD + "  ✅ Expected time: " + str(EXPECTED_TIME_HMS))
-        sleep(1)
+        print(GREEN + BOLD + "  ✅ Expected time: " + str(EXPECTED_TIME_HMS)) 
+        sleep(1) 
 
         print(GRAY + BOLD + "\n  🔑 Starting decryption ...\n"+END) if DECRYPT else print(GRAY + BOLD + "\n  🔒 Starting encryption ...\n"+END)
         sleep(2)
@@ -161,7 +160,7 @@ class Alohomora:
 
             PROGRESS_HASH_COUNT = ((floor((COUNT/len(FILE_PATHS_LIST))*100)//10))
 
-            print("\n  🏆 Progress: [" + PROGRESS_HASH_COUNT * "##" + "__" * (10 - PROGRESS_HASH_COUNT) + "]\n" ) if COUNT != len else print("\n  🏆 Progress: COMPLETED! ")
+            print("\n\n  🏆 Progress: [" + PROGRESS_HASH_COUNT * "##" + "__" * (10 - PROGRESS_HASH_COUNT) + "]\n" ) if COUNT != len else print("\n  🏆 Progress: COMPLETED! ")
 
 
             with open(FILE_PATH, 'rb') as FILE:
@@ -169,30 +168,27 @@ class Alohomora:
 
             LENGTH = self.RSA.MAX_CIPHER_LENGTH if DECRYPT else 446
 
-            BYTES_CHUNK,j = [],0
-            for i in range(0,len(BYTES), LENGTH):
-                if j != len(BYTES) // LENGTH :
-                    BYTES_CHUNK.append(self._encrypt_function((BYTES[i:i+LENGTH]), DECRYPT))
-                else:
-                    BYTES_CHUNK.append(self._encrypt_function(BYTES[i:], DECRYPT))
-                j+=1
 
-            
+            ENCRYPT_FUNCTION = self._encrypt_function(DECRYPT)
+            DECRYPT_FUNCTION = self._decrypt_function(DECRYPT)
+
             OUTPUT_FILE_BYTES = bytes()
 
-            if DECRYPT:
+            INPUT_FILE_SIZE = len(BYTES)
 
-                for BYTE in BYTES_CHUNK: OUTPUT_FILE_BYTES+= self.RSA.decrypt(BYTE)
+            if not DECRYPT: os.remove(FILE_PATH)
 
-                with open(FILE_PATH, 'wb') as FILE: FILE.write(OUTPUT_FILE_BYTES)
+            with open(FILE_PATH, 'wb') as FILE:
 
-            else:
-
-                for BYTE in BYTES_CHUNK: OUTPUT_FILE_BYTES+=BYTE
+                for i in range(0,INPUT_FILE_SIZE, LENGTH):
+                    BYTE = ENCRYPT_FUNCTION(BYTES[i:i+LENGTH])
+                    FILE.write(DECRYPT_FUNCTION(BYTE))
+            
+                REMAINING_BYTES = INPUT_FILE_SIZE % LENGTH
                 
-                os.remove(FILE_PATH)
-
-                with open(FILE_PATH, 'wb') as FILE: FILE.write(OUTPUT_FILE_BYTES)
+                if REMAINING_BYTES != 0:
+                    BYTE = ENCRYPT_FUNCTION(BYTES[INPUT_FILE_SIZE-REMAINING_BYTES-1:])
+                    FILE.write(DECRYPT_FUNCTION(BYTE))
 
             sleep(1)
 
@@ -213,19 +209,28 @@ class Alohomora:
                 FILE_PATH = os.path.join(ROOT, FILE)
                 yield FILE_PATH
 
-    def _encrypt_function(self, BYTES_SUBSTR, DECRYPT): return BYTES_SUBSTR if DECRYPT else self.RSA.encrypt(BYTES_SUBSTR)
+    def _encrypt_function(self, DECRYPT):
+        def void(BYTE): return BYTE
+        return void if DECRYPT else self.RSA.encrypt
+        self.RSA.decrypt(BYTE) if DECRYPT else BYTE
+
+    def _decrypt_function(self, DECRYPT):
+        def void(BYTE): return BYTE
+        return self.RSA.decrypt if DECRYPT else void
     
+
+
     def _convert_minutes_to_hms(self, MINUTES):
 
         SECONDS_PART = ceil((MINUTES - floor(MINUTES))*60)
 
         MINUTES = ceil(MINUTES) if MINUTES > 1 else 0
 
-        HOURS = str(MINUTES // 60) if (MINUTES // 60) >10 else '0'+str(MINUTES // 60)
+        HOURS = str(MINUTES // 60) if (MINUTES // 60) >=10 else '0'+str(MINUTES // 60)
 
-        MINUTES = str(MINUTES % 60) if (MINUTES % 60) >10 else '0'+str(MINUTES % 60)
+        MINUTES = str(MINUTES % 60) if (MINUTES % 60) >=10 else '0'+str(MINUTES % 60)
 
-        SECONDS = str(SECONDS_PART) if SECONDS_PART > 10 else "0" + str(SECONDS_PART)
+        SECONDS = str(SECONDS_PART) if SECONDS_PART >= 10 else "0" + str(SECONDS_PART)
         
         return HOURS+"h:"+MINUTES+"m:"+SECONDS+"s"
         
