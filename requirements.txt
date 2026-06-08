@@ -1,0 +1,4 @@
+# Alohomora dependencies
+# Works on Linux, Windows, Termux (Android)
+cryptography>=41.0.0
+rich>=13.0.0

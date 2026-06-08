@@ -153,5 +153,5 @@ dmypy.json
 cython_debug/
 
 #Keys
-.KEYS/PRIVATE_KEY.pem
-.KEYS/PUBLIC_KEY.pem
+.KEYS/
+.KEYS/*

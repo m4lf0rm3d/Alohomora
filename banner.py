@@ -1,15 +1,19 @@
-import shutil
-from colors import *
+from rich.text import Text
+from rich.panel import Panel
+from rich.align import Align
+from rich import print as rprint
 
-TERMINAL_WIDTH = shutil.get_terminal_size().columns
-LEFT_PADDING = (TERMINAL_WIDTH - 55) // 2
-RIGHT_PADDING = TERMINAL_WIDTH - 55 - LEFT_PADDING
+ASCII_ART = """\
+ ▄▄▄· ▄▄▌         ▄ . ▄      • ▌ ▄ ·.       ▄▄▄   ▄▄▄·
+▐█ ▀█ ██•  ▪     ██▪ ▐█▪     ·██ ▐███▪▪     ▀▄ █·▐█ ▀█
+▄█▀▀█ ██▪   ▄█▀▄ ██▀▀▐█ ▄█▀▄ ▐█ ▌▐▌▐█· ▄█▀▄ ▐▀▀▄ ▄█▀▀█
+▐█ ▪▐▌▐█▌▐▌▐█▌.▐▌██▌ ▐▀▐█▌.▐▌██ ██▌▐█▌▐█▌.▐▌▐█•█▌▐█ ▪▐▌
+ ▀  ▀ .▀▀▀  ▀█▄▀▪▀▀▀  · ▀█▄▀▪▀▀  █▪▀▀▀ ▀█▄▀▪.▀  ▀ ▀  ▀\
+"""
 
-BANNER_TEXT = BLUE + f'''
-{" "*LEFT_PADDING} ▄▄▄· ▄▄▌         ▄ . ▄      • ▌ ▄ ·.       ▄▄▄   ▄▄▄· {" "*RIGHT_PADDING}
-{" "*LEFT_PADDING}▐█ ▀█ ██•  ▪     ██▪ ▐█▪     ·██ ▐███▪▪     ▀▄ █·▐█ ▀█ {" "*RIGHT_PADDING}
-{" "*LEFT_PADDING}▄█▀▀█ ██▪   ▄█▀▄ ██▀▀▐█ ▄█▀▄ ▐█ ▌▐▌▐█· ▄█▀▄ ▐▀▀▄ ▄█▀▀█ {" "*RIGHT_PADDING}
-{" "*LEFT_PADDING}▐█ ▪▐▌▐█▌▐▌▐█▌.▐▌██▌ ▐▀▐█▌.▐▌██ ██▌▐█▌▐█▌.▐▌▐█•█▌▐█ ▪▐▌{" "*RIGHT_PADDING}
-{" "*LEFT_PADDING} ▀  ▀ .▀▀▀  ▀█▄▀▪▀▀▀  · ▀█▄▀▪▀▀  █▪▀▀▀ ▀█▄▀▪.▀  ▀ ▀  ▀ {" "*RIGHT_PADDING}\n
-{" "*((TERMINAL_WIDTH - 18)//2)+YELLOW+BOLD}🔐 hide secrets 🔐{" "*((TERMINAL_WIDTH - (TERMINAL_WIDTH - 18)//2) -18)}{END}\n
-'''
+def print_banner():
+    art = Text(ASCII_ART, style="bold blue", justify="center")
+    subtitle = Text("🔐  hide secrets  🔐", style="bold yellow", justify="center")
+    content = Text.assemble(art, "\n\n", subtitle)
+    panel = Panel(Align.center(content), border_style="blue", padding=(0, 2))
+    rprint(panel)
